@@ -1,93 +1,99 @@
 const express = require('express')
-const faker = require('faker');
+
+const CategoryServices = require('./../services/categories.service')
 const router = express.Router()
+const services = new CategoryServices
 
 
 
-router.get('/', (req,res)=>{
-  const {size} = req.query
-  const categories = []
-  const limit = size || 10
-  for (let i = 0; i < limit; i++) {
-    categories.push({
-      department: faker.commerce.department(),
-      id: faker.datatype.uuid(),
+router.get('/', async (req,res,next)=>{
 
-     })
+  try {
+    const {size} = req.query
+    const categories = await services.find(size)
+    res.json(categories);
 
+  } catch (error) {
+    next(error)
   }
-  res.json(categories);
 
 
 
 })
-router.get('/:id',(req,res)=>{
-  const {id} = req.params
+router.get('/:id',async (req,res,next)=>{
 
-  res.json({
+  try {
+    const {id} = req.params
+    const category = await services.findOne(id)
+    res.json(category)
 
-    department: faker.commerce.department(),
-    id: faker.datatype.uuid()
-  })
+  } catch (error) {
+      next(error)
+  }
 })
 
-router.post('/',(req,res)=>{
-  const {id,department} = req.body
+router.post('/',async (req,res,next)=>{
 
-  res.json({
-    message: "Created",
-    data:{
-      id,
-      department
-    }
-  })
+  try {
+    const body = req.body
+    const category =  await services.create(body)
+    res.json(category)
+
+  } catch (error) {
+    next(error)
+  }
 })
-router.put('/:id',(req,res)=>{
-  const {id} = req.params
-  const {department} = req.body
+router.put('/:id',async (req,res,next)=>{
+  try {
+    const {id} = req.params
+    const body = req.body
+    const category = await services.update(id,body)
+    res.json(category)
 
-  res.json({
-    message: "Updated",
-    data:{
-      department
-    },
-    id
-  })
-})
-
-router.patch('/:id',(req,res)=>{
-  const {id} = req.params
-  const {department} = req.body
-
-  res.json({
-    message: "Updated",
-    data:{
-      department
-    },
-    id
-  })
+  } catch (error) {
+    next(error)
+  }
 })
 
-router.delete('/:id',(req,res)=>{
-  const {id} = req.params
+router.patch('/:id',async (req,res,next)=>{
+  try {
+    const {id} = req.params
+    const body = req.body
+    const category = await services.update(id,body)
+    res.json(category)
 
-
-  res.json({
-    message: "Deleted",
-    id
-  })
+  } catch (error) {
+    next(error)
+  }
 })
 
-router.get('/categories/:categoryId/products/:productId',(req,res)=>{
-  const {categoryId,productId} = req.params
+router.delete('/:id',async (req,res,next)=>{
+  try {
+    const {id} = req.params
+    const category =await services.delete(id)
+    res.json(category)
 
-  res.json({
-    category : "Home Products",
-    categoryId,
-    productId,
-    name : "licuadora",
-    price: 35
-  })
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.get('/categories/:categoryId/products/:productId',async (req,res,next)=>{
+
+  try {
+    const {categoryId,productId} = req.params
+    res.json({
+      category : "Home Products",
+      categoryId,
+      productId,
+      name : "licuadora",
+      price: 35
+    })
+
+  } catch (error) {
+    next(error)
+  }
+
 
   })
 
