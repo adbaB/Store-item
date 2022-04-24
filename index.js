@@ -6,11 +6,11 @@ const {logErrors,errorHandler,boomErrorHandler} = require('./middleware/error.ha
 
 
 const app = express();
-const port = 3005;
-const whitelist = ['http://127.0.0.1:5500']
+const port = process.env.PORT || 3005;
+const whitelist = ['http://127.0.0.1:5500','http://localhost:3005']
 const options = {
   origin: (origin,callback)=>{
-    if (whitelist.includes(origin)){
+    if (whitelist.includes(origin) || !origin){
       callback(null,true)
     }else
     {
@@ -18,8 +18,8 @@ const options = {
     }
   }
 }
-app.use(express.json())
 app.use(cors(options))
+app.use(express.json())
 app.get('/', (req, res) => {
   res.send('hola a todo');
 });
@@ -32,5 +32,5 @@ app.use(boomErrorHandler)
 app.use(errorHandler)
 
 app.listen(port, () => {
-  console.log('server on port:' + port)
+  //console.log('server on port:' + port)
 });

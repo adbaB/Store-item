@@ -3,10 +3,10 @@ const express = require('express')
 const CategoryServices = require('./../services/categories.service')
 const router = express.Router()
 const services = new CategoryServices
+const validatorHandler = require('./../middleware/validator.handler')
+const {createDepartamentSchema,updateDepartamentSchema,getDepartamentSchema} = require('./../schema/category.schema')
 
-
-
-router.get('/', async (req,res,next)=>{
+router.get('/',async (req,res,next)=>{
 
   try {
     const {size} = req.query
@@ -20,7 +20,9 @@ router.get('/', async (req,res,next)=>{
 
 
 })
-router.get('/:id',async (req,res,next)=>{
+router.get('/:id',
+validatorHandler(getDepartamentSchema,'params'),
+async (req,res,next)=>{
 
   try {
     const {id} = req.params
@@ -32,7 +34,9 @@ router.get('/:id',async (req,res,next)=>{
   }
 })
 
-router.post('/',async (req,res,next)=>{
+router.post('/',
+validatorHandler(createDepartamentSchema,'body')
+,async (req,res,next)=>{
 
   try {
     const body = req.body
@@ -43,7 +47,11 @@ router.post('/',async (req,res,next)=>{
     next(error)
   }
 })
-router.put('/:id',async (req,res,next)=>{
+router.put('/:id',
+
+validatorHandler(getDepartamentSchema,'params'),
+validatorHandler(updateDepartamentSchema,'body')
+,async (req,res,next)=>{
   try {
     const {id} = req.params
     const body = req.body
@@ -55,7 +63,11 @@ router.put('/:id',async (req,res,next)=>{
   }
 })
 
-router.patch('/:id',async (req,res,next)=>{
+router.patch('/:id',
+
+validatorHandler(getDepartamentSchema,'params'),
+validatorHandler(updateDepartamentSchema,'body')
+,async (req,res,next)=>{
   try {
     const {id} = req.params
     const body = req.body
@@ -67,7 +79,9 @@ router.patch('/:id',async (req,res,next)=>{
   }
 })
 
-router.delete('/:id',async (req,res,next)=>{
+router.delete('/:id',
+validatorHandler(getDepartamentSchema,'params')
+,async (req,res,next)=>{
   try {
     const {id} = req.params
     const category =await services.delete(id)
