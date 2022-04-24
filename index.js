@@ -32,5 +32,5 @@ app.use(boomErrorHandler)
 app.use(errorHandler)
 
 app.listen(port, () => {
-  //console.log('server on port:' + port)
+  console.log('server on port:' + port)
 });

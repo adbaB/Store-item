@@ -1,10 +1,11 @@
 const boom = require('@hapi/boom');
 const faker = require('faker');
-
+const sequelize = require('./../libs/sequelize')
 class UserServices {
   constructor() {
     this.users = [];
     this.generate();
+
   }
   generate() {
     const limit = 50;
@@ -29,13 +30,17 @@ class UserServices {
     ;
   }
   async find(size) {
+    const query = 'SELECT * FROM users'
     const limit = size || this.users.length;
     const list = [];
+    const [data] = await sequelize.query(query)
     for (let i = 0; i < limit; i++) {
       list.push(this.users[i]);
     }
     //console.log(list)
-    return list;
+    return {
+      data
+    };
   }
   async findOne(id) {
     const user = this.users.find((item) => item.id === id);
