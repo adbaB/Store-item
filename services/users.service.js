@@ -1,6 +1,6 @@
 const boom = require('@hapi/boom');
 const faker = require('faker');
-const sequelize = require('./../libs/sequelize')
+const {models} = require('./../libs/sequelize')
 class UserServices {
   constructor() {
     this.users = [];
@@ -21,62 +21,45 @@ class UserServices {
     }
   }
   async create(data) {
-    const newUser = {
-      id: faker.datatype.uuid(),
-      ...data,
-    }
-    this.users.push(newUser)
-    return newUser
+
+
+        const newUser = await models.User.create(data)
+      return newUser
+
     ;
   }
   async find(size) {
-    const query = 'SELECT * FROM users'
-    const limit = size || this.users.length;
-    const list = [];
-    const [data] = await sequelize.query(query)
-    for (let i = 0; i < limit; i++) {
-      list.push(this.users[i]);
+    try {
+      const data = await models.User.findAll()
+      return data
+
+
+    } catch (error) {
+        throw new Error(error)
     }
-    //console.log(list)
-    return {
-      data
-    };
+
   }
   async findOne(id) {
-    const user = this.users.find((item) => item.id === id);
+    const user = await models.User.findByPk(id);
+
     if (!user) {
       throw boom.notFound('User not found');
     }
-    if (user.isEditable) {
-      throw boom.conflict('User is Block');
-    }
+
     return user;
   }
   async update(id, changes) {
-    const index = this.users.findIndex((item) => item.id === id);
-    if (index === -1) {
-      throw boom.notFound('Product not found');
-    } else {
-      const user = this.users[index];
-      this.users[index] = {
-        ...user,
-        ...changes,
-      };
-      return  this.users[index]
-    }
+
+    const rta = models.User.update(changes,{
+      where:{id}
+    })
+
+   return rta
   }
   async delete(id) {
-    const index = this.users.findIndex((item) => item.id === id);
-    if (index === -1) {
-      throw boom.notFound('Product not found');
-    } else {
-      this.users.splice(index, 1);
-      return {
-        Message: 'User Deleted',
-        id,
-      };
-    }
-  }
-}
 
+    const rta = await models.User.destroy({where: {id}})
+    return rta
+}
+}
 module.exports = UserServices;

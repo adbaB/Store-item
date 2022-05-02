@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors')
 const routerIndex = require('./routes/index.router')
-const {logErrors,errorHandler,boomErrorHandler} = require('./middleware/error.handler')
+const {logErrors,errorHandler,boomErrorHandler,queryErrorHandler} = require('./middleware/error.handler')
 
 
 
@@ -29,6 +29,7 @@ routerIndex(app)
 //middleware de errores van despues del routing y se coloca por orden de inicio
 app.use(logErrors)
 app.use(boomErrorHandler)
+app.use(queryErrorHandler)
 app.use(errorHandler)
 
 app.listen(port, () => {
